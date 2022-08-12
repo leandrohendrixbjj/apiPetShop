@@ -12,8 +12,7 @@ class Supply {
    }
 
    async store(){
-       this.checkFields();
-       const store = await Table.store({
+      const store = await Table.store({
            empresa: this.empresa,
            email: this.email,
            categoria: this.categoria
@@ -63,20 +62,7 @@ class Supply {
 
    async delete(){
        return await Table.destroy(this.id);
-   }
-
-   checkFields(){
-     const fields = ['empresa','email','categoria'];
-     
-     for (let i in fields){
-       let value = this[fields[i]];
-       
-       if (typeof value != 'string' || value.length <= 0){            
-         let message = `O campo ${fields[i]} não possui valor`;  
-         throw new WrongFields(message);        
-       }
-     }
-   }    
+   }   
 }
 
 module.exports = Supply;
