@@ -5,12 +5,8 @@ const config = require('./config/default.json');
 const supplyRoute = require('./supply/route.js');
 
 app.use(
-    bodyParser.json({
-      extended:true
-    }),
-    bodyParser.urlencoded({
-      extended:true  
-    }),    
+    bodyParser.json(),
+    bodyParser.urlencoded({extended:true}),    
 );
 
 app.use('/api/supply', supplyRoute);

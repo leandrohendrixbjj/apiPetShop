@@ -2,9 +2,54 @@ const route = require('express').Router();
 const Supply = require('./Supply.js');
 const {body,validationResult} = require('express-validator');
 
-route.get('/', async (req,res) => {
-    res.json({'data': await Supply.all()});
+route.get('/', async (req,res) => {    
+   const limit = parseInt(req.query.limit);
+   const page = parseInt(req.query.page);
+   const startIndex = (page - 1 )*limit;
+   const endtIndex = page * limit;
+   const companies =  await Supply.all();
+   const data = {};
+
+   data.total = companies.length;
+
+   if (startIndex > 0){
+    data.previous = {
+      page: page - 1,
+      limit:limit
+    } 
+   }
+
+   if (endtIndex < companies.length){
+    data.next = {
+      page: page + 1,
+      limit:limit
+    }
+   }
+   
+   data.result = companies.slice(startIndex,endtIndex);   
+   res.json(data);
+      
 });
+
+function paginate(supplies){
+  return (req,res,next) => {
+    const limit = 2;
+    const page = 1;
+    const data = {};
+    const startIndex = (page-1)*limit;
+    const endtIndex = page *limit;
+
+    if (startIndex > 0){
+      data.previous = {
+        page: page - 1,
+        limit: limit
+      }
+    }
+    data.result = supplies.slice(startIndex, endtIndex);
+    res.paginate = data;
+    next();
+  }
+}
 
 route.post('/',[
     body('empresa').notEmpty().withMessage("Informe um valor para o campo empresa"),
