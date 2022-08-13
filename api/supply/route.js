@@ -2,53 +2,41 @@ const route = require('express').Router();
 const Supply = require('./Supply.js');
 const {body,validationResult} = require('express-validator');
 
-route.get('/', async (req,res) => {    
-   const limit = parseInt(req.query.limit);
-   const page = parseInt(req.query.page);
-   const startIndex = (page - 1 )*limit;
-   const endtIndex = page * limit;
-   const companies =  await Supply.all();
-   const data = {};
-
-   data.total = companies.length;
-
-   if (startIndex > 0){
-    data.previous = {
-      page: page - 1,
-      limit:limit
-    } 
-   }
-
-   if (endtIndex < companies.length){
-    data.next = {
-      page: page + 1,
-      limit:limit
-    }
-   }
-   
-   data.result = companies.slice(startIndex,endtIndex);   
-   res.json(data);
-      
+route.get('/', async (req,res) => { 
+  
+  if (req.query.limit == undefined || req.query.page == undefined){
+    res.status(200).json(await Supply.all());
+  }else{
+    const data = await paginate( parseInt(req.query.limit),
+                                 parseInt(req.query.page),
+                                await Supply.all());
+    res.status(200).json(data);        
+  } 
 });
 
-function paginate(supplies){
-  return (req,res,next) => {
-    const limit = 2;
-    const page = 1;
+async function paginate(limit,page,companies){  
+  return new Promise((resolve,reject) => {
+    const startIndex = (page - 1 )*limit;
+    const endtIndex = page * limit;  
     const data = {};
-    const startIndex = (page-1)*limit;
-    const endtIndex = page *limit;
 
+    data.total = companies.length;
     if (startIndex > 0){
       data.previous = {
-        page: page - 1,
-        limit: limit
-      }
+       page: page - 1,
+       limit:limit
+      }  
     }
-    data.result = supplies.slice(startIndex, endtIndex);
-    res.paginate = data;
-    next();
-  }
+
+    if (endtIndex < companies.length){
+      data.next = {
+        page: page + 1,
+        limit:limit
+      }
+    }   
+    data.result = companies.slice(startIndex,endtIndex);   
+    resolve(data);
+  });
 }
 
 route.post('/',[
