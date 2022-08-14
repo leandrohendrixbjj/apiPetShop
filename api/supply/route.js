@@ -4,19 +4,20 @@ const {body,validationResult} = require('express-validator');
 
 route.get('/', async (req,res) => { 
   
-  if (req.query.limit == undefined || req.query.page == undefined){
-    res.status(200).json(await Supply.all());
-  }else{
-    const data = await paginate( parseInt(req.query.limit),
-                                 parseInt(req.query.page),
-                                await Supply.all());
-    res.status(200).json(data);        
-  } 
+  const limit = req.query.limit;
+  const page = req.query.page; 
+  const data = await paginate(limit,page,await Supply.all());
+
+  res.status(200).json(data);        
 });
 
-async function paginate(limit,page,companies){  
+async function paginate(limitParam,pageParam,companies){  
   return new Promise((resolve,reject) => {
-    const startIndex = (page - 1 )*limit;
+    
+    let limit = (limitParam == undefined || limitParam == 0) ? companies.length : parseInt(limitParam);
+    let page = (pageParam == undefined || pageParam == 0) ? 1 : parseInt(pageParam);
+       
+    const startIndex = (page - 1 ) * limit;
     const endtIndex = page * limit;  
     const data = {};
 
