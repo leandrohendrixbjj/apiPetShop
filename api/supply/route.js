@@ -84,11 +84,28 @@ route.put('/:id', [
    if (errorsValidator.length > 0){
      res.status(400).json({"errors":errorsValidator});
    }else{
-     const dados = Object.assign({}, req.body, {id:req.params.id});
-     const supply = new Supply(dados);
-     await supply.update();
-     res.status(200).end();
+    try{
+      const dados = Object.assign({}, req.body, {id:req.params.id});
+       const supply = new Supply(dados);
+       await supply.update();
+       res.status(200).end();
+    }catch(err){
+      res.status(400).json(err);
+      throw new Error("Não foi possível atualizar o registro");
+    }   
    }
-})
+});
+
+route.delete('/:id', async (req,res) => {
+  
+  try{
+    const supply = new Supply({id:req.params.id});
+    await supply.show();
+    await supply.delete();
+    res.status(200).end();
+  }catch(err){
+    res.status(400).json({error:'Not found'});    
+  }
+});
 
 module.exports = route;
