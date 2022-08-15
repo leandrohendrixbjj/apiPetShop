@@ -1,6 +1,7 @@
 const route = require('express').Router();
 const Supply = require('./Supply.js');
 const {body,validationResult} = require('express-validator');
+const { json } = require('body-parser');
 
 route.get('/', async (req,res) => { 
   
@@ -72,5 +73,22 @@ route.get('/:id', async (req,res) => {
     throw new Error(error);
   }  
 });
+
+route.put('/:id', [
+   body('empresa').notEmpty().withMessage("Campos empresa é obrigatório"),
+   body('empresa').isLength({min:3}).withMessage("Empresa deve ter três caracteres")  
+], async (req,res) => {
+   const errors = validationResult(req);
+   const errorsValidator = errors.array();
+   
+   if (errorsValidator.length > 0){
+     res.status(400).json({"errors":errorsValidator});
+   }else{
+     const dados = Object.assign({}, req.body, {id:req.params.id});
+     const supply = new Supply(dados);
+     await supply.update();
+     res.status(200).end();
+   }
+})
 
 module.exports = route;

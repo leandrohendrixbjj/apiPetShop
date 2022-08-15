@@ -40,25 +40,12 @@ class Supply {
    }
 
    async update(){
-     await Table.show(this.id);
-     const fields = ['empresa','email','categoria'];
-     const data = {};
-
-     for(let row in fields){
-       const value = this[fields[row]];
-
-       if (typeof value == 'string' && value.length > 0){
-         data[fields[row]] = value;
-       }else{
-         throw new Error(`O campo ${fields[row]} não possui valor`);  
-       }
-     }
-
-     if (Object.keys(data).length === 0)
-       throw new Error('Obejct is empty');
-
-     await Table.update(this.id,data);       
-  }
+     return await Table.update(this.id,{
+       empresa:this.empresa,
+       email:this.email,
+       categoria: this.categoria
+     });       
+   }
 
    async delete(){
        return await Table.destroy(this.id);
