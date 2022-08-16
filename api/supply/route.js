@@ -57,8 +57,7 @@ route.post('/',[
         await supply.store();
         res.status(201).end();
       }catch(error){
-        res.status(400);  
-        throw new Error("Erro no cadastro da empresa");
+        res.status(400);        
       }
     }
 });
@@ -70,7 +69,7 @@ route.get('/:id', async (req,res) => {
      let supply = new Supply({id:id});
      res.status(200).json({data: await supply.show()});
   }catch(error){    
-    throw new Error(error);
+    res.status(404).end();
   }  
 });
 
@@ -88,10 +87,9 @@ route.put('/:id', [
       const dados = Object.assign({}, req.body, {id:req.params.id});
        const supply = new Supply(dados);
        await supply.update();
-       res.status(200).end();
+       res.status(204).end();
     }catch(err){
-      res.status(400).json(err);
-      throw new Error("Não foi possível atualizar o registro");
+      res.status(400).end();     
     }   
    }
 });
@@ -102,9 +100,12 @@ route.delete('/:id', async (req,res) => {
     const supply = new Supply({id:req.params.id});
     await supply.show();
     await supply.delete();
-    res.status(200).end();
+    res.status(204).end();
   }catch(err){
-    res.status(400).json({error:'Not found'});    
+    res.status(404); 
+    res.send(
+      JSON.stringify({message:'Supply not found'})
+    ).end();    
   }
 });
 
