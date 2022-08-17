@@ -1,4 +1,5 @@
 const Model = require('./model.js');
+const NotFound = require('../Errors/NotFound.js');
  
 module.exports = {
     all(){
@@ -15,7 +16,7 @@ module.exports = {
        });
        
        if (!supply)
-         throw new Error('Not Found');
+         throw  new NotFound;
 
        return supply.dataValues;  
     },

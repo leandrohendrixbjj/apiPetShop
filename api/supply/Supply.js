@@ -40,6 +40,7 @@ class Supply {
    }
 
    async update(){
+    await Table.show(this.id);
      return await Table.update(this.id,{
        empresa:this.empresa,
        email:this.email,
