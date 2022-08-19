@@ -1,14 +1,18 @@
 const route = require('express').Router();
 const Supply = require('./Supply.js');
 const {body,validationResult} = require('express-validator');
+const SupplySerializer = require('../Serializar/index.js').SerializerError;
 
-route.get('/', async (req,res) => { 
-  
-  const limit = req.query.limit;
-  const page = req.query.page; 
-  const data = await paginate(limit,page,await Supply.all());
-
-  res.status(200).json(data);        
+route.get('/', async (req,res,next) => { 
+  try{
+    const serializer = new SupplySerializer(req.header('Accept'));     
+    const data = await paginate(req.query.limit,req.query.page,await Supply.all());
+    
+    res.status(200);
+    res.send( serializer.serialize(data) );
+  }catch(error){
+    next(error); 
+  }          
 });
 
 async function paginate(limitParam,pageParam,companies){  
@@ -51,7 +55,7 @@ route.post('/',[
     if (errorsValidator.length > 0){
       res.status(400).json({"errors":errorsValidator});
     }else{    
-      try{
+      try{        
         const supply = new Supply(req.body);  
         await supply.store();
         res.status(201).end();
@@ -63,10 +67,14 @@ route.post('/',[
 
 route.get('/:id', async (req,res,next) => {
   const {id} = req.params;
-
   try{
-     let supply = new Supply({id:id});
-     res.status(200).json({data: await supply.show()});
+    let serializer = new SupplySerializer(req.header('Accept'));
+    let supply = new Supply({id:id});
+    
+    res.status(200);
+    res.send(
+      serializer.serialize(await supply.show())
+    );    
   }catch(error){    
     next(error); 
   }  
