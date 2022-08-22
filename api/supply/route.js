@@ -6,10 +6,13 @@ const SupplySerializer = require('../Serializar/index.js').SerializerError;
 route.get('/', async (req,res,next) => { 
   try{
     const serializer = new SupplySerializer(req.header('Accept'));     
-    const data = await paginate(req.query.limit,req.query.page,await Supply.all());
-    
+   
     res.status(200);
-    res.send( serializer.serialize(data) );
+    let data = serializer.serialize(await Supply.all());
+    res.send(
+      await paginate(req.query.limit,req.query.page,JSON.parse(data))
+    );
+  
   }catch(error){
     next(error); 
   }          

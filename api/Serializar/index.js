@@ -23,7 +23,7 @@ class Serializer{
     }
 
     serialize (data){
-       //data = this.filter(data); 
+       data = this.filter(data); 
 
        if (this.contentType == 'application/json')
          return this.json(data);
@@ -45,11 +45,11 @@ class Serializer{
     }
 
     filter (data){
-        if (Array.isArray(data)){
+        if (Array.isArray(data)){           
             data = data.map(items => {
                 return this.filterObject(items);
             });
-        }else{
+        }else{           
             data = this.filterObject(data);
         }
         return data;
@@ -60,11 +60,13 @@ class SerializerError extends Serializer{
     constructor(contentType){
        super();
        this.contentType = contentType;    
-    //    this.publicFields = [
-    //        'id',
-    //        'message'].concat(extraFields || []);    
-    //     this.tagSingle = "error";
-    //     this.tagPlurol = "errors";    
+       this.publicFields = [
+           'id',
+           'empresa',
+           'email',
+           'message']; //.concat(extraFields || []);    
+        this.tagSingle = "error";
+        this.tagPlurol = "errors";    
     }
 }
 
