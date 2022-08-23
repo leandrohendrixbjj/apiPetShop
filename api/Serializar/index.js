@@ -36,7 +36,7 @@ class Serializer{
 
     filterObject (data){   
        const newData = {};
-       
+        
        this.publicFields.forEach((field) => {                    
           if (data.hasOwnProperty(field))
              newData[field] = data[field];
@@ -57,14 +57,12 @@ class Serializer{
 }
 
 class SerializerError extends Serializer{
-    constructor(contentType){
+    constructor(contentType,extraFields){
        super();
        this.contentType = contentType;    
        this.publicFields = [
            'id',
-           'empresa',
-           'email',
-           'message']; //.concat(extraFields || []);    
+           'message'].concat(extraFields || []);    
         this.tagSingle = "error";
         this.tagPlurol = "errors";    
     }

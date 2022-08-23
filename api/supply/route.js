@@ -5,7 +5,7 @@ const SupplySerializer = require('../Serializar/index.js').SerializerError;
 
 route.get('/', async (req,res,next) => { 
   try{
-    const serializer = new SupplySerializer(req.header('Accept'));     
+    const serializer = new SupplySerializer(req.header('Accept'),['empresa','categoria']);     
    
     res.status(200);
     let data = serializer.serialize(await Supply.all());
@@ -71,7 +71,9 @@ route.post('/',[
 route.get('/:id', async (req,res,next) => {
   const {id} = req.params;
   try{
-    let serializer = new SupplySerializer(req.header('Accept'));
+    let serializer = new SupplySerializer(
+        req.header('Accept'),
+        ['email','dataCriacao', 'dataAtualizacao', 'versao']);
     let supply = new Supply({id:id});
     
     res.status(200);

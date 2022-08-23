@@ -12,7 +12,7 @@ module.exports = (app) => {
     if (error instanceof NotAccetable){
       status =  406;
     }
-           
+       
     res.status(status);
     res.json({mensagem:error.message,id:error.idError}); 
   });
