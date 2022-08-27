@@ -7,7 +7,7 @@ class Serializer{
         return JSON.stringify(data);
     }
 
-    xml (data){
+    xml (data){          
        let tag = this.tagSingle;
        
        if (Array.isArray(data)){
@@ -63,8 +63,8 @@ class SerializerError extends Serializer{
        this.publicFields = [
            'id',
            'message'].concat(extraFields || []);    
-        this.tagSingle = "error";
-        this.tagPlurol = "errors";    
+        this.tagSingle = "dado";
+        this.tagPlurol = "dados";    
     }
 }
 

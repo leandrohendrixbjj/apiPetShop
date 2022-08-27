@@ -7,7 +7,7 @@ module.exports = (app) => {
     if (formatRequest ==  '*/*'){
       formatRequest = 'application/json';  
     }
-      
+    
     if (Serializer.indexOf(formatRequest) === -1){
       res.status(406).end();
       return;

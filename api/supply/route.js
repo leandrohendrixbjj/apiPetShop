@@ -3,13 +3,38 @@ const Supply = require('./Supply.js');
 const {body,validationResult} = require('express-validator');
 const SupplySerializer = require('../Serializar/index.js').SerializerError;
 
+route.post('/',[
+  body('empresa').notEmpty().withMessage("Informe um valor para o campo empresa"),
+  body('empresa').isLength({min:3}).withMessage("Informe três caracteres para empresa")
+
+], async (req,res) => {
+  const errors = validationResult(req);
+  const errorsValidator = errors.array();
+   
+  if (errorsValidator.length > 0){
+    res.status(400).json({"errors":errorsValidator});
+  }else{    
+    try{        
+      const supply = new Supply(req.body);  
+      await supply.store();
+      res.status(201).end();
+    }catch(error){
+      res.status(400);        
+    }
+  }
+});
+
 route.get('/', async (req,res,next) => { 
   try{
     const serializer = new SupplySerializer(req.header('Accept'),['empresa','categoria']);     
    
     res.status(200);
     let data = serializer.serialize(await Supply.all());
-    res.send(
+    
+    if (req.header('Accept') == 'application/xml')
+      res.send(data).end();
+    
+    res.send(      
       await paginate(req.query.limit,req.query.page,JSON.parse(data))
     );
   
@@ -46,27 +71,6 @@ async function paginate(limitParam,pageParam,companies){
     resolve(data);
   });
 }
-
-route.post('/',[
-    body('empresa').notEmpty().withMessage("Informe um valor para o campo empresa"),
-    body('empresa').isLength({min:3}).withMessage("Informe três caracteres para empresa")
-
-], async (req,res) => {
-    const errors = validationResult(req);
-    const errorsValidator = errors.array();
-     
-    if (errorsValidator.length > 0){
-      res.status(400).json({"errors":errorsValidator});
-    }else{    
-      try{        
-        const supply = new Supply(req.body);  
-        await supply.store();
-        res.status(201).end();
-      }catch(error){
-        res.status(400);        
-      }
-    }
-});
 
 route.get('/:id', async (req,res,next) => {
   const {id} = req.params;
